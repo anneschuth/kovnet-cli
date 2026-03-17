@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.5 (2026-03-17)
+
+### Bug Fixes
+
+- Correct badge URLs to use kovnet-cli repo name
+  ([`f9139cf`](https://github.com/anneschuth/kovnet-cli/commit/f9139cf11012259ac2131fdfc929ab49a1c6f8a6))
+
+
 ## v1.1.4 (2026-03-17)
 
 ### Bug Fixes
