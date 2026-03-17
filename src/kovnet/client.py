@@ -350,11 +350,22 @@ class KovNetClient:
 
     def get_chat_messages(self, chat_key: str) -> list[dict[str, str]]:
         """Get all messages for a chat (older + today)."""
-        older_html = self._get_html(f"/chat_older_messages/{chat_key}")
-        today_html = self._get_html(f"/chat_messages/{chat_key}")
-        older = scrape_chat_messages(older_html)
-        today = scrape_chat_messages(today_html)
+        from concurrent.futures import ThreadPoolExecutor
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            older_fut = pool.submit(self._get_html, f"/chat_older_messages/{chat_key}")
+            today_fut = pool.submit(self._get_html, f"/chat_messages/{chat_key}")
+            older = scrape_chat_messages(older_fut.result())
+            today = scrape_chat_messages(today_fut.result())
         return older + today
+
+    def get_all_chat_messages(self, chat_keys: list[str]) -> dict[str, list[dict[str, str]]]:
+        """Get messages for multiple chats in parallel."""
+        from concurrent.futures import ThreadPoolExecutor
+
+        with ThreadPoolExecutor(max_workers=6) as pool:
+            futures = {key: pool.submit(self.get_chat_messages, key) for key in chat_keys}
+            return {key: fut.result() for key, fut in futures.items()}
 
     def explore(self, path: str) -> httpx.Response:
         """Fetch an arbitrary path with session cookies. For exploration."""

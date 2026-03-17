@@ -301,12 +301,14 @@ def chats(
                 console.print("[dim]Geen chats gevonden met deze filters[/]")
             return
 
-        # Fetch messages for each chat
+        # Fetch messages for all chats in parallel
+        chat_keys = [c.get("chat_key", "") for c in filtered]
+        messages_by_key = client.get_all_chat_messages(chat_keys)
+
         all_data: list[dict[str, Any]] = []
         for chat in filtered:
-            chat_key = chat.get("chat_key", "")
-            msgs = client.get_chat_messages(chat_key)
-            all_data.append({**chat, "messages": msgs})
+            key = chat.get("chat_key", "")
+            all_data.append({**chat, "messages": messages_by_key.get(key, [])})
 
         if as_json:
             print(json.dumps(all_data, indent=2, default=str))
