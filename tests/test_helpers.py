@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from kovnet.helpers import extract_csrf_token, scrape_invoices_table
+from kovnet.helpers import (
+    extract_csrf_token,
+    scrape_chat_messages,
+    scrape_chats_list,
+    scrape_invoices_table,
+)
 
 
 class TestExtractCsrfToken:
@@ -123,3 +128,139 @@ class TestScrapeInvoicesTable:
         result = scrape_invoices_table(html)
         assert len(result) == 1
         assert result[0]["pdf_url"] == ""
+
+
+class TestScrapeChatsList:
+    def test_basic_chats(self):
+        html = """
+        <h3>
+        [
+        0
+        ]
+        <a href='/chats/19868_425817'>
+        De Geheime Tuin BSO Utrecht HP
+        /
+        <strong>1 Akkerwinde</strong>
+        :
+        <strong style='color: green;'>
+        Rosie Schuth Peters
+        (groep van vandaag)
+        </strong>
+        </a>
+        </h3>
+        <h3>
+        [
+        2
+        ]
+        <a href='/chats/18588_425816'>
+        De Geheime Tuin BSO Utrecht HP
+        /
+        <strong>2 Berkenwoud</strong>
+        :
+        <strong>Sarah Schuth Peters</strong>
+        </a>
+        </h3>
+        """
+        result = scrape_chats_list(html)
+        assert len(result) == 2
+
+        assert result[0]["chat_key"] == "19868_425817"
+        assert result[0]["group"] == "1 Akkerwinde"
+        assert result[0]["child"] == "Rosie Schuth Peters"
+        assert result[0]["location"] == "De Geheime Tuin BSO Utrecht HP"
+        assert result[0]["unread"] == "0"
+        assert result[0]["today"] == "true"
+
+        assert result[1]["chat_key"] == "18588_425816"
+        assert result[1]["group"] == "2 Berkenwoud"
+        assert result[1]["child"] == "Sarah Schuth Peters"
+        assert result[1]["unread"] == "2"
+        assert result[1]["today"] == "false"
+
+    def test_empty_html(self):
+        assert scrape_chats_list("") == []
+
+    def test_no_chats(self):
+        html = "<html><body>Geen chats</body></html>"
+        assert scrape_chats_list(html) == []
+
+
+class TestScrapeChatMessages:
+    def test_parent_message(self):
+        html = """
+        <div class='chat-message message-old message-parent'>
+        <div class='message-text'>
+        <span style='white-space: pre-line;'>Hallo, alles goed?</span>
+        </div>
+        <div class='message-title'>
+        2025-01-20 07:07
+        -
+        Anne Schuth
+        <span class='message_sign_readed message_unreaded_sign'>
+        &#10004;
+        </span>
+        </div>
+        </div>
+        """
+        result = scrape_chat_messages(html)
+        assert len(result) == 1
+        assert result[0]["text"] == "Hallo, alles goed?"
+        assert result[0]["datetime"] == "2025-01-20 07:07"
+        assert result[0]["sender"] == "Anne Schuth"
+        assert result[0]["is_parent"] == "true"
+        assert result[0]["is_read"] == "true"
+
+    def test_group_message(self):
+        html = """
+        <div class='chat-message message-group message-old'>
+        <div class='message-text'>
+        <span style='white-space: pre-line;'>Is helemaal goed</span>
+        </div>
+        <div class='message-title'>
+        2025-01-20 08:16
+        -
+        BSO Utrecht HP
+        </div>
+        </div>
+        """
+        result = scrape_chat_messages(html)
+        assert len(result) == 1
+        assert result[0]["text"] == "Is helemaal goed"
+        assert result[0]["sender"] == "BSO Utrecht HP"
+        assert result[0]["is_parent"] == "false"
+
+    def test_multiple_messages(self):
+        html = """
+        <div class='chat-message message-old message-parent'>
+        <div class='message-text'>
+        <span style='white-space: pre-line;'>First</span>
+        </div>
+        <div class='message-title'>
+        2025-01-01 09:00
+        -
+        Parent
+        </div>
+        </div>
+        <div class='clear'></div>
+        <div class='chat-message message-group message-old'>
+        <div class='message-text'>
+        <span style='white-space: pre-line;'>Second</span>
+        </div>
+        <div class='message-title'>
+        2025-01-01 09:05
+        -
+        Group
+        </div>
+        </div>
+        """
+        result = scrape_chat_messages(html)
+        assert len(result) == 2
+        assert result[0]["text"] == "First"
+        assert result[1]["text"] == "Second"
+
+    def test_empty_html(self):
+        assert scrape_chat_messages("") == []
+
+    def test_no_messages(self):
+        html = "<h1 style='text-align:center;'>Nog geen berichten</h1>"
+        assert scrape_chat_messages(html) == []

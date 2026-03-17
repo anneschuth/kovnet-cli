@@ -20,7 +20,12 @@ from typing import Any
 
 import httpx
 
-from .helpers import extract_csrf_token, scrape_invoices_table
+from .helpers import (
+    extract_csrf_token,
+    scrape_chat_messages,
+    scrape_chats_list,
+    scrape_invoices_table,
+)
 
 # Endpoints
 AUTH_BASE = "https://auth.kovnet.nl"
@@ -338,6 +343,18 @@ class KovNetClient:
 
     def get_invoice_pdf(self, contract_id: str, invoice_id: str) -> bytes:
         return self._get_bytes(f"/parents/contracts/{contract_id}/invoices/{invoice_id}.pdf")
+
+    def get_chats(self) -> list[dict[str, str]]:
+        html = self._get_html("/chats")
+        return scrape_chats_list(html)
+
+    def get_chat_messages(self, chat_key: str) -> list[dict[str, str]]:
+        """Get all messages for a chat (older + today)."""
+        older_html = self._get_html(f"/chat_older_messages/{chat_key}")
+        today_html = self._get_html(f"/chat_messages/{chat_key}")
+        older = scrape_chat_messages(older_html)
+        today = scrape_chat_messages(today_html)
+        return older + today
 
     def explore(self, path: str) -> httpx.Response:
         """Fetch an arbitrary path with session cookies. For exploration."""

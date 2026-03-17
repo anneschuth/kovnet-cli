@@ -263,6 +263,73 @@ def holidays(ctx: click.Context, contract: str | None, location: str | None) -> 
             console.print(f"  {h}")
 
 
+@cli.command()
+@click.pass_context
+def chats(ctx: click.Context) -> None:
+    """Chatrooms tonen."""
+    as_json = ctx.obj["json"]
+    with KovNetClient() as client:
+        items = client.get_chats()
+
+        if as_json:
+            print(json.dumps(items, indent=2, default=str))
+            return
+
+        if not items:
+            console.print("[dim]Geen chats gevonden[/]")
+            return
+
+        table = Table(title="Chats")
+        table.add_column("Key", style="dim")
+        table.add_column("Groep", style="bold")
+        table.add_column("Kind", style="cyan")
+        table.add_column("Locatie", style="dim")
+        table.add_column("Ongelezen", style="red")
+        table.add_column("Vandaag", style="green")
+
+        for chat in items:
+            table.add_row(
+                chat.get("chat_key", ""),
+                chat.get("group", ""),
+                chat.get("child", ""),
+                chat.get("location", ""),
+                chat.get("unread", "0"),
+                "●" if chat.get("today") == "true" else "",
+            )
+
+        console.print(table)
+
+
+@cli.command()
+@click.argument("chat_key", type=str)
+@click.pass_context
+def messages(ctx: click.Context, chat_key: str) -> None:
+    """Berichten in een chat tonen.
+
+    CHAT_KEY is het chat ID (bijv. 19868_425817, uit `kovnet chats`).
+    """
+    as_json = ctx.obj["json"]
+    with KovNetClient() as client:
+        items = client.get_chat_messages(chat_key)
+
+        if as_json:
+            print(json.dumps(items, indent=2, default=str))
+            return
+
+        if not items:
+            console.print("[dim]Geen berichten gevonden[/]")
+            return
+
+        for msg in items:
+            dt = msg.get("datetime", "")
+            sender = msg.get("sender", "")
+            text = msg.get("text", "")
+            is_parent = msg.get("is_parent") == "true"
+
+            style = "bold" if is_parent else "bold cyan"
+            console.print(f"  [dim]{dt}[/] [{style}]{sender}:[/] {text}")
+
+
 @click.command("open")
 @click.argument("ref", type=str)
 def open_invoice(ref: str) -> None:
