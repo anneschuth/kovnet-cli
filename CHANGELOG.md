@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.0 (2026-03-17)
+
+### Features
+
+- Add chats and messages commands
+  ([`972cd9c`](https://github.com/anneschuth/kovnet-cli/commit/972cd9cfc69b68f5eb7863ab131a1ffdbc315e77))
+
+
 ## v1.0.1 (2026-03-17)
 
 ### Bug Fixes
