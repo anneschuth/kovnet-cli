@@ -137,8 +137,8 @@ wheels = [
 ]
 
 [[package]]
-name = "kovnet-cli"
-version = "1.1.0"
+name = "kovnet"
+version = "1.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
@@ -164,7 +164,7 @@ dev = [
 requires-dist = [
     { name = "click", marker = "extra == 'cli'", specifier = ">=8.1" },
     { name = "httpx", specifier = ">=0.27" },
-    { name = "kovnet-cli", extras = ["cli"], marker = "extra == 'dev'" },
+    { name = "kovnet", extras = ["cli"], marker = "extra == 'dev'" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "python-dotenv", marker = "extra == 'cli'", specifier = ">=1.0" },

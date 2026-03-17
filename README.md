@@ -1,5 +1,5 @@
 <h1 align="center">
-  🏠 kovnet-cli
+  🏠 kovnet
 </h1>
 
 <p align="center">
@@ -8,10 +8,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/anneschuth/kovnet-cli/actions"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/anneschuth/kovnet-cli/ci.yml?branch=main&label=CI"></a>
-  <a href="https://pypi.org/project/kovnet-cli/"><img alt="PyPI" src="https://img.shields.io/pypi/v/kovnet-cli"></a>
-  <a href="https://pypi.org/project/kovnet-cli/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/kovnet-cli"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/anneschuth/kovnet-cli"></a>
+  <a href="https://github.com/anneschuth/kovnet/actions"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/anneschuth/kovnet/ci.yml?branch=main&label=CI"></a>
+  <a href="https://pypi.org/project/kovnet/"><img alt="PyPI" src="https://img.shields.io/pypi/v/kovnet"></a>
+  <a href="https://pypi.org/project/kovnet/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/kovnet"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/anneschuth/kovnet"></a>
 </p>
 
 ---
@@ -33,17 +33,17 @@ Authenticatie gaat via session cookies — geen browser nodig.
 
 ```bash
 # CLI (met pip)
-pip install kovnet-cli[cli]
+pip install kovnet[cli]
 
 # CLI (met uv, aanbevolen)
-uv tool install kovnet-cli[cli]
+uv tool install kovnet[cli]
 
 # Alleen SDK (geen rich/click)
-pip install kovnet-cli
+pip install kovnet
 
 # Vanuit source
-git clone https://github.com/anneschuth/kovnet-cli.git
-cd kovnet-cli
+git clone https://github.com/anneschuth/kovnet.git
+cd kovnet
 uv tool install .[cli]
 ```
 
@@ -152,8 +152,8 @@ with KovNetClient(session) as client:
 ## Development
 
 ```bash
-git clone https://github.com/anneschuth/kovnet-cli.git
-cd kovnet-cli
+git clone https://github.com/anneschuth/kovnet.git
+cd kovnet
 uv sync --extra dev
 uv run pre-commit install
 uv run pytest
