@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.3 (2026-03-17)
+
+### Bug Fixes
+
+- Rename package from kovnet-cli to kovnet
+  ([`b83a3aa`](https://github.com/anneschuth/kovnet-cli/commit/b83a3aacfa2380907170be4498e5ba23a588b337))
+
+
 ## v1.1.2 (2026-03-17)
 
 ### Performance Improvements
