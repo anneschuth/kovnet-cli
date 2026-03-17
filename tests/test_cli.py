@@ -23,7 +23,6 @@ class TestMainHelp:
             "invoices",
             "holidays",
             "chats",
-            "messages",
             "open",
             "explore",
             "completion",
@@ -139,13 +138,9 @@ class TestChatsCommand:
     def test_help(self):
         result = runner.invoke(cli, ["chats", "--help"])
         assert result.exit_code == 0
-
-
-class TestMessagesCommand:
-    def test_help(self):
-        result = runner.invoke(cli, ["messages", "--help"])
-        assert result.exit_code == 0
-        assert "CHAT_KEY" in result.output
+        assert "--child" in result.output
+        assert "--group" in result.output
+        assert "--today" in result.output
 
 
 class TestOpenCommand:

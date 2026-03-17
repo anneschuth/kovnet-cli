@@ -264,70 +264,85 @@ def holidays(ctx: click.Context, contract: str | None, location: str | None) -> 
 
 
 @cli.command()
+@click.option("--child", default=None, help="Filter op kindnaam (substring)")
+@click.option("--group", "group_filter", default=None, help="Filter op groepnaam (substring)")
+@click.option("--today", is_flag=True, default=False, help="Alleen groepen van vandaag")
 @click.pass_context
-def chats(ctx: click.Context) -> None:
-    """Chatrooms tonen."""
-    as_json = ctx.obj["json"]
-    with KovNetClient() as client:
-        items = client.get_chats()
+def chats(
+    ctx: click.Context,
+    child: str | None,
+    group_filter: str | None,
+    today: bool,
+) -> None:
+    """Chats met berichten tonen.
 
-        if as_json:
-            print(json.dumps(items, indent=2, default=str))
-            return
-
-        if not items:
-            console.print("[dim]Geen chats gevonden[/]")
-            return
-
-        table = Table(title="Chats")
-        table.add_column("Key", style="dim")
-        table.add_column("Groep", style="bold")
-        table.add_column("Kind", style="cyan")
-        table.add_column("Locatie", style="dim")
-        table.add_column("Ongelezen", style="red")
-        table.add_column("Vandaag", style="green")
-
-        for chat in items:
-            table.add_row(
-                chat.get("chat_key", ""),
-                chat.get("group", ""),
-                chat.get("child", ""),
-                chat.get("location", ""),
-                chat.get("unread", "0"),
-                "●" if chat.get("today") == "true" else "",
-            )
-
-        console.print(table)
-
-
-@cli.command()
-@click.argument("chat_key", type=str)
-@click.pass_context
-def messages(ctx: click.Context, chat_key: str) -> None:
-    """Berichten in een chat tonen.
-
-    CHAT_KEY is het chat ID (bijv. 19868_425817, uit `kovnet chats`).
+    Toont alle chatrooms met hun berichten. Filter optioneel op kind,
+    groep, of alleen de groepen van vandaag.
     """
     as_json = ctx.obj["json"]
     with KovNetClient() as client:
-        items = client.get_chat_messages(chat_key)
+        chat_list = client.get_chats()
+
+        if not chat_list:
+            if as_json:
+                print("[]")
+            else:
+                console.print("[dim]Geen chats gevonden[/]")
+            return
+
+        # Apply filters
+        filtered = chat_list
+        if child:
+            filtered = [c for c in filtered if child.lower() in c.get("child", "").lower()]
+        if group_filter:
+            filtered = [c for c in filtered if group_filter.lower() in c.get("group", "").lower()]
+        if today:
+            filtered = [c for c in filtered if c.get("today") == "true"]
+
+        if not filtered:
+            if as_json:
+                print("[]")
+            else:
+                console.print("[dim]Geen chats gevonden met deze filters[/]")
+            return
+
+        # Fetch messages for each chat
+        all_data: list[dict[str, Any]] = []
+        for chat in filtered:
+            chat_key = chat.get("chat_key", "")
+            msgs = client.get_chat_messages(chat_key)
+            all_data.append({**chat, "messages": msgs})
 
         if as_json:
-            print(json.dumps(items, indent=2, default=str))
+            print(json.dumps(all_data, indent=2, default=str))
             return
 
-        if not items:
-            console.print("[dim]Geen berichten gevonden[/]")
-            return
+        for chat_data in all_data:
+            group = chat_data.get("group", "")
+            child_name = chat_data.get("child", "")
+            unread = chat_data.get("unread", "0")
+            is_today = chat_data.get("today") == "true"
+            msgs = chat_data.get("messages", [])
 
-        for msg in items:
-            dt = msg.get("datetime", "")
-            sender = msg.get("sender", "")
-            text = msg.get("text", "")
-            is_parent = msg.get("is_parent") == "true"
+            today_mark = " [green](vandaag)[/]" if is_today else ""
+            unread_mark = f" [red]({unread} ongelezen)[/]" if unread != "0" else ""
+            header = f"[bold]{group}[/] — [cyan]{child_name}[/]{today_mark}{unread_mark}"
+            console.print(f"\n  {header}")
+            console.print(f"  {'─' * 60}")
 
-            style = "bold" if is_parent else "bold cyan"
-            console.print(f"  [dim]{dt}[/] [{style}]{sender}:[/] {text}")
+            if not msgs:
+                console.print("  [dim]Geen berichten[/]")
+            else:
+                for msg in msgs:
+                    dt = msg.get("datetime", "")
+                    sender = msg.get("sender", "")
+                    text = msg.get("text", "")
+                    is_parent = msg.get("is_parent") == "true"
+
+                    style = "bold" if is_parent else "bold cyan"
+                    console.print(f"  [dim]{dt}[/] [{style}]{sender}:[/] {text}")
+
+        console.print()
 
 
 @click.command("open")
