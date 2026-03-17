@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.2 (2026-03-17)
+
+### Performance Improvements
+
+- Fetch chat messages in parallel
+  ([`01b47b5`](https://github.com/anneschuth/kovnet-cli/commit/01b47b5d739b5f8400515d8e2250354060e18a5d))
+
+
 ## v1.1.1 (2026-03-17)
 
 ### Bug Fixes
