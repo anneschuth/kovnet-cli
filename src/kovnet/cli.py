@@ -7,6 +7,7 @@ Usage:
     kovnet contracts                     # List contracts
     kovnet invoices [--contract ID]      # List invoices
     kovnet holidays [--contract ID]      # List holidays
+    kovnet chats [--child X] [--group Y] # Show chats with messages
     kovnet open REF                      # Open invoice PDF by number
     kovnet explore URL                   # Fetch URL with session cookies
     kovnet completion SHELL              # Output shell completion script
