@@ -153,7 +153,7 @@ class KovNetAuth:
                     "Login mislukt: geen sessie cookies ontvangen. Controleer je inloggegevens."
                 )
 
-            # Try to extract location_id from redirect or page content
+            # Try to extract location_id from redirect URL, page content, or sidebar
             detected_location = location_id
             if not detected_location:
                 loc_match = re.search(r"/locations/(\d+)", str(signin_resp.url))
@@ -163,6 +163,16 @@ class KovNetAuth:
                     loc_match = re.search(r"/locations/(\d+)", signin_resp.text)
                     if loc_match:
                         detected_location = loc_match.group(1)
+
+            # If still no location, try fetching /chats which has sidebar links
+            if not detected_location:
+                try:
+                    chats_resp = client.get(f"{APP_BASE}/chats", follow_redirects=True)
+                    loc_match = re.search(r"/locations/(\d+)", chats_resp.text)
+                    if loc_match:
+                        detected_location = loc_match.group(1)
+                except Exception:
+                    pass
 
             session_data: dict[str, Any] = {
                 "cookies": cookies,
@@ -289,7 +299,24 @@ class KovNetClient:
         loc = location_id or self.location_id
         if not loc:
             raise RuntimeError("Geen locatie ID bekend. Gebruik --location of login opnieuw.")
-        return self._get(f"/parents/locations/{loc}/contracts.json")
+        contracts = self._get(f"/parents/locations/{loc}/contracts.json")
+
+        # JSON endpoint doesn't include contract IDs — scrape them from the HTML page
+        if contracts and not contracts[0].get("id"):
+            html = self._get_html(f"/parents/locations/{loc}/contracts")
+            contract_ids = re.findall(r"/contracts/(\d+)", html)
+            # Deduplicate while preserving order
+            seen: set[str] = set()
+            unique_ids: list[str] = []
+            for cid in contract_ids:
+                if cid not in seen:
+                    seen.add(cid)
+                    unique_ids.append(cid)
+            for i, contract in enumerate(contracts):
+                if i < len(unique_ids):
+                    contract["id"] = unique_ids[i]
+
+        return contracts
 
     def get_holidays(
         self, contract_id: str, location_id: str | None = None
