@@ -38,12 +38,15 @@ pip install kovnet[cli]
 # CLI (met uv, aanbevolen)
 uv tool install kovnet[cli]
 
+# CLI (met Homebrew)
+brew install anneschuth/tap/kovnet
+
 # Alleen SDK (geen rich/click)
 pip install kovnet
 
 # Vanuit source
-git clone https://github.com/anneschuth/kovnet.git
-cd kovnet
+git clone https://github.com/anneschuth/kovnet-cli.git
+cd kovnet-cli
 uv tool install .[cli]
 ```
 
@@ -152,8 +155,8 @@ with KovNetClient(session) as client:
 ## Development
 
 ```bash
-git clone https://github.com/anneschuth/kovnet.git
-cd kovnet
+git clone https://github.com/anneschuth/kovnet-cli.git
+cd kovnet-cli
 uv sync --extra dev
 uv run pre-commit install
 uv run pytest
