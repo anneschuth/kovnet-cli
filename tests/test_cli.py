@@ -140,7 +140,6 @@ class TestChatsCommand:
         assert result.exit_code == 0
         assert "--child" in result.output
         assert "--group" in result.output
-        assert "--today" in result.output
 
 
 class TestOpenCommand:

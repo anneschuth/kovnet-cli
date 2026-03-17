@@ -266,18 +266,15 @@ def holidays(ctx: click.Context, contract: str | None, location: str | None) -> 
 @cli.command()
 @click.option("--child", default=None, help="Filter op kindnaam (substring)")
 @click.option("--group", "group_filter", default=None, help="Filter op groepnaam (substring)")
-@click.option("--today", is_flag=True, default=False, help="Alleen groepen van vandaag")
 @click.pass_context
 def chats(
     ctx: click.Context,
     child: str | None,
     group_filter: str | None,
-    today: bool,
 ) -> None:
     """Chats met berichten tonen.
 
-    Toont alle chatrooms met hun berichten. Filter optioneel op kind,
-    groep, of alleen de groepen van vandaag.
+    Toont alle chatrooms met hun berichten. Filter optioneel op kind of groep.
     """
     as_json = ctx.obj["json"]
     with KovNetClient() as client:
@@ -296,8 +293,6 @@ def chats(
             filtered = [c for c in filtered if child.lower() in c.get("child", "").lower()]
         if group_filter:
             filtered = [c for c in filtered if group_filter.lower() in c.get("group", "").lower()]
-        if today:
-            filtered = [c for c in filtered if c.get("today") == "true"]
 
         if not filtered:
             if as_json:
@@ -321,12 +316,10 @@ def chats(
             group = chat_data.get("group", "")
             child_name = chat_data.get("child", "")
             unread = chat_data.get("unread", "0")
-            is_today = chat_data.get("today") == "true"
             msgs = chat_data.get("messages", [])
 
-            today_mark = " [green](vandaag)[/]" if is_today else ""
             unread_mark = f" [red]({unread} ongelezen)[/]" if unread != "0" else ""
-            header = f"[bold]{group}[/] — [cyan]{child_name}[/]{today_mark}{unread_mark}"
+            header = f"[bold]{group}[/] — [cyan]{child_name}[/]{unread_mark}"
             console.print(f"\n  {header}")
             console.print(f"  {'─' * 60}")
 
