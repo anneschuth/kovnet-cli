@@ -8,10 +8,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/anneschuth/kovnet/actions"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/anneschuth/kovnet/ci.yml?branch=main&label=CI"></a>
+  <a href="https://github.com/anneschuth/kovnet-cli/actions"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/anneschuth/kovnet-cli/ci.yml?branch=main&label=CI"></a>
   <a href="https://pypi.org/project/kovnet/"><img alt="PyPI" src="https://img.shields.io/pypi/v/kovnet"></a>
   <a href="https://pypi.org/project/kovnet/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/kovnet"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/anneschuth/kovnet"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/anneschuth/kovnet-cli"></a>
 </p>
 
 ---
