@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.1.4 (2026-03-17)
+
+### Bug Fixes
+
+- Add missing chats command to module docstring
+  ([`7c92511`](https://github.com/anneschuth/kovnet-cli/commit/7c92511bc4f01b878b2bd1556e5dc583521ab09b))
+
+### Documentation
+
+- Add Homebrew install option and fix clone URLs
+  ([`7e069be`](https://github.com/anneschuth/kovnet-cli/commit/7e069bedfbbd226380eb438c77a304ac9f27f552))
+
+
 ## v1.1.3 (2026-03-17)
 
 ### Bug Fixes
