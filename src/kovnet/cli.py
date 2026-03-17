@@ -14,7 +14,7 @@ Usage:
 
 from __future__ import annotations
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 import json
 import sys

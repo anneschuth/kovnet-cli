@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.1.1 (2026-03-17)
+
+### Bug Fixes
+
+- Remove misleading "vandaag" label from chats output
+  ([`3497eef`](https://github.com/anneschuth/kovnet-cli/commit/3497eefd61ba956bdf5d4332940c823320a2cba8))
+
+### Refactoring
+
+- Merge chats and messages into single chats command
+  ([`ad065e8`](https://github.com/anneschuth/kovnet-cli/commit/ad065e89e1e666cd8e24b06e82c20ad303a5a0df))
+
+
 ## v1.1.0 (2026-03-17)
 
 ### Features
