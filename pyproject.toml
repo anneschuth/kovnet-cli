@@ -1,6 +1,6 @@
 [project]
 name = "kovnet"
-version = "1.1.5"
+version = "1.0.0"
 description = "Command-line interface for the KovNet childcare platform (kinderopvang)"
 readme = "README.md"
 requires-python = ">=3.11"
